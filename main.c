@@ -1,7 +1,14 @@
-#include <stdlib.h>
+/**
+ * AUTHOR:FARIS ABUFARHA
+ * ID:1200546
+ * github:https://github.com/faris771
+ * IDE: JETBRAINS CLION
+ */
+
 #include <stdio.h>
-
-
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
 
 
 /*
@@ -21,27 +28,193 @@ Bold:   \033[1;3?m
 Reset: \033[0m
 */
 
-typedef char String[100];
-
-
 #define null NULL
+#define MAX_STRING 100
+#define MAX_LINE 4095
+
+typedef char String[MAX_STRING];
+
+//  =================================================LIST FUNCTIONS AND STUFF==================================
+typedef struct listNode {
 
 
+    String topic;
+    struct listNode *next;
 
 
-//Radi version, but edited
+} listNode;
 
 
+bool isEmptyList(listNode *head) {
+    if (head->next == null) {
+
+        return true;
+
+    }
+    else {
+        return false;
+    }
+
+
+}
+
+//n is a pointer to our wanted listNode
+bool isLastList(listNode *n, listNode *head) {
+
+    return n->next == null;
+
+}
+
+
+int sizeOfList(listNode *head) {
+
+    int cnt = 0;
+    for (listNode *iter = head->next; iter != NULL; iter = iter->next) {
+        cnt++;
+    }
+
+
+    return cnt;
+
+}
+
+void deleteList(listNode *head) {
+    listNode *tmp = null;
+    for (listNode *iter = head->next; iter != NULL;) {
+
+        tmp = iter;
+        iter = iter->next;
+        tmp->next = null;
+        free(tmp);
+
+    }
+
+    head->next = null;
+
+}
+
+listNode *findPrevNodeList(String x, listNode *head) {
+    listNode *i = null;
+
+    for (i = head; i != null && strcmp(i->next->topic, x)!=0; i = i->next) {
+
+    }
+
+
+    return i;
+
+
+}
+
+void printList(listNode *head) {
+    if (isEmptyList(head)) {
+        printf("empty List\n");
+        return;
+    }
+    for (listNode *iter = head->next; iter != NULL; iter = iter->next) {
+        printf("%s ", iter->topic);
+
+    }
+    printf("\n");
+}
+
+
+void insertAtNodeList(String x, listNode *head, listNode *p) {
+
+    listNode *tmp = malloc(sizeof(listNode));
+
+    strcpy(tmp->topic, x);
+    tmp->next = p->next;
+    p->next = tmp;
+
+//    free(tmp);
+}
+
+void insertAtBeginningList(String x, listNode *head) {
+    listNode *tmp = malloc(sizeof(listNode));
+    strcpy(tmp->topic , x);
+    tmp->next = head->next;
+
+    head->next = tmp;
+
+//    free(tmp);
+
+}
+
+void deleteNodeList(String x, listNode *head) {
+
+//    for (listNode *i = head;i!= null && i;  < ; ++) {
+//
+//    }
+    listNode *tmp = null;
+
+    listNode *prev = findPrevNodeList(x, head);
+    if (!isLastList(prev, head)) {
+        tmp = prev->next;
+        prev->next = tmp->next;
+        free(tmp);
+
+
+    }
+
+
+}
+
+
+listNode *findNodeList(String x, listNode *head) {
+
+//    listNode *i = null;
+//    i = head->next;
+//
+//    while (i != null && i->topic != x) {
+//        i = i->next;
+//
+//        if (i->topic == x){
+//            printf("found!\n");
+//            return i;
+//        }
+//    }
+//
+//    printf("not found\n");
+    for (listNode *iter = head->next; iter != NULL; iter = iter->next) {
+        if (strcmp(iter->topic , x) ==0) {
+            printf("found\n");
+            return iter;
+
+        }
+
+    }
+
+
+}
+
+
+// give it a listNode ptr, and let it the head by making it pointing into a listNode
+listNode *makeEmptyList(listNode *head) {
+
+    if (head != null) {
+        //delete list
+
+    }
+    head = malloc(sizeof(listNode));
+    head->next = null;
+
+
+    return head;
+
+
+}
+
+
+//  =================================================TREE FUNCTIONS AND STUFF==================================
 typedef struct AVLnode *pAvl;
 
 typedef struct AVLnode {
-    //key
-    String courseCode;
+
+    String courseCode;//key
     String course;
     int creditHours;
-
-
-
+    String topics;
 
     pAvl left;
     pAvl right;
@@ -61,15 +234,15 @@ pAvl makeEmpty(pAvl T) {
     return NULL;
 }
 
-pAvl find(int X, pAvl T) {
+pAvl find(String courseCode, pAvl T) {
     if (T == NULL) {
         return NULL;
     }
-    if (X < T->courseCode) {
-        return find(X, T->left);
+    if (strcmp(courseCode, T->courseCode) < 0) {
+        return find(courseCode, T->left);
     }
-    else if (X > T->courseCode) {
-        return find(X, T->right);
+    else if (strcmp(courseCode, T->courseCode) > 0) {
+        return find(courseCode, T->right);
     }
     else {
         return T;
@@ -118,7 +291,7 @@ int max(int Lhs, int Rhs) {
 
 /* START: fig4_39.txt */
 /* This function can be called only if K2 has a left child */
-/* Perform a rotate between a node (K2) and its left child */
+/* Perform a rotate between a listNode (K2) and its left child */
 /* Update heights, then return new root */
 
 pAvl singleRotateWithLeft(pAvl K2) {
@@ -136,7 +309,7 @@ pAvl singleRotateWithLeft(pAvl K2) {
 
 
 /* This function can be called only if K1 has a right child */
-/* Perform a rotate between a node (K1) and its right child */
+/* Perform a rotate between a listNode (K1) and its right child */
 /* Update heights, then return new root */
 
 pAvl singleRotateWithRight(pAvl K1) {
@@ -182,23 +355,25 @@ pAvl doubleRotateWithRight(pAvl K1) {
 
 
 /* START: fig4_37.txt */
-pAvl insert(int X, pAvl T) {
+//ADD THE NEW ARGUMENTS
+pAvl insert(String courseCode, pAvl T) {
     if (T == NULL) {
-        /* Create and return a one-node tree */
-        T = malloc(sizeof(struct AVLnode));
+        /* Create and return a one-listNode tree */
+        T = malloc(sizeof(AVLnode));
         if (T == NULL) {
             printf("Out of space!!!");
         }
         else {
-//            T->courseCode = X;
+            //HERE WE ASSIGN THE VALUES
+            strcpy(T->courseCode, courseCode);
             T->height = 0;
             T->left = T->right = NULL;
         }
     }
-    else if (X < T->courseCode) {
-        T->left = insert(X, T->left);
+    else if (strcmp(courseCode, T->courseCode) < 0) {
+        T->left = insert(courseCode, T->left);
         if (height(T->left) - height(T->right) == 2) {
-            if (X < T->left->courseCode) {
+            if (strcmp(courseCode, T->left->courseCode) < 0) {
                 T = singleRotateWithLeft(T);
             }
             else {
@@ -206,11 +381,11 @@ pAvl insert(int X, pAvl T) {
             }
         }
     }
-    else if (X > T->courseCode) {
+    else if (strcmp(courseCode, T->courseCode) > 0) {
 
-        T->right = insert(X, T->right);
+        T->right = insert(courseCode, T->right);
         if (height(T->right) - height(T->left) == 2) {
-            if (X > T->right->courseCode) {
+            if (strcmp(courseCode, T->right->courseCode) > 0) {
                 T = singleRotateWithRight(T);
             }
             else {
@@ -218,7 +393,7 @@ pAvl insert(int X, pAvl T) {
             }
         }
     }
-    /* Else X is in the tree already; we'll do nothing */
+    /* Else courseCode is in the tree already; we'll do nothing */
 
     T->height = max(height(T->left), height(T->right)) + 1;
     return T;
@@ -226,10 +401,12 @@ pAvl insert(int X, pAvl T) {
 /* END */
 
 //in-order print to see the elements
+
+//EDIT IF NEEDED MORE DETAILS!!
 void printInOrder(pAvl t) {
     if (t != NULL) {
         printInOrder(t->left);
-        printf("%d\t", t->courseCode);
+        printf("%s\t", t->courseCode);
         printInOrder(t->right);
     }
 }
@@ -243,10 +420,35 @@ void red() {
 
 void yellow() {
     printf("\033[1;33m");
+
+
+}
+
+void cyan() {
+    printf("\\033[0;36m\n");
 }
 
 void reset() {
     printf("\033[0m");
+}
+
+void line() {
+    printf("================================================================\n");
+}
+
+void welcome() {
+    cyan();
+    printf("                 _                              \n"
+           "                | |                             \n"
+           " __      __ ___ | |  ___  ___   _ __ ___    ___ \n"
+           " \\ \\ /\\ / // _ \\| | / __|/ _ \\ | '_ ` _ \\  / _ \\\n"
+           "  \\ V  V /|  __/| || (__| (_) || | | | | ||  __/\n"
+           "   \\_/\\_/  \\___||_| \\___|\\___/ |_| |_| |_| \\___|\n"
+           "                                                \n"
+           "                                                \n");
+
+    reset();
+
 }
 
 
@@ -256,20 +458,20 @@ int main() {
     tree = makeEmpty(tree);
 
     //the same sequence of inderting elements in the example
-    tree = insert(1, tree);
-    tree = insert(2, tree);
-    tree = insert(3, tree);
-    tree = insert(4, tree);
-    tree = insert(5, tree);
-    tree = insert(6, tree);
-    tree = insert(7, tree);
-    tree = insert(16, tree);
-    tree = insert(15, tree);
-    tree = insert(14, tree);
-    tree = insert(13, tree);
-    tree = insert(12, tree);
-    tree = insert(11, tree);
-    tree = insert(10, tree);
+    tree = insert("1", tree);
+    tree = insert("2", tree);
+//    tree = insert(3, tree);
+//    tree = insert(4, tree);
+//    tree = insert(5, tree);
+//    tree = insert(6, tree);
+//    tree = insert(7, tree);
+//    tree = insert(16, tree);
+//    tree = insert(15, tree);
+//    tree = insert(14, tree);
+//    tree = insert(13, tree);
+//    tree = insert(12, tree);
+//    tree = insert(11, tree);
+//    tree = insert(10, tree);
 
     printf("Test to print the tree (In-Order):\n");
     printInOrder(tree);
