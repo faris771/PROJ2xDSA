@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <ctype.h>
 
 
 /*
@@ -30,7 +31,8 @@ Reset: \033[0m
 
 #define null NULL
 #define MAX_STRING 100
-#define MAX_LINE 4095
+#define MAX_LINE 300
+
 
 typedef char String[MAX_STRING];
 
@@ -43,6 +45,8 @@ typedef struct listNode {
 
 
 } listNode;
+
+typedef listNode *pNode;
 
 
 bool isEmptyList(listNode *head) {
@@ -96,7 +100,7 @@ void deleteList(listNode *head) {
 listNode *findPrevNodeList(String x, listNode *head) {
     listNode *i = null;
 
-    for (i = head; i != null && strcmp(i->next->topic, x)!=0; i = i->next) {
+    for (i = head; i != null && strcmp(i->next->topic, x) != 0; i = i->next) {
 
     }
 
@@ -132,7 +136,7 @@ void insertAtNodeList(String x, listNode *head, listNode *p) {
 
 void insertAtBeginningList(String x, listNode *head) {
     listNode *tmp = malloc(sizeof(listNode));
-    strcpy(tmp->topic , x);
+    strcpy(tmp->topic, x);
     tmp->next = head->next;
 
     head->next = tmp;
@@ -148,10 +152,10 @@ void deleteNodeList(String x, listNode *head) {
 //    }
     listNode *tmp = null;
 
-    listNode *prev = findPrevNodeList(x, head);
-    if (!isLastList(prev, head)) {
-        tmp = prev->next;
-        prev->next = tmp->next;
+    listNode *prevNode = findPrevNodeList(x, head);
+    if (!isLastList(prevNode, head)) {
+        tmp = prevNode->next;
+        prevNode->next = tmp->next;
         free(tmp);
 
 
@@ -177,7 +181,7 @@ listNode *findNodeList(String x, listNode *head) {
 //
 //    printf("not found\n");
     for (listNode *iter = head->next; iter != NULL; iter = iter->next) {
-        if (strcmp(iter->topic , x) ==0) {
+        if (strcmp(iter->topic, x) == 0) {
             printf("found\n");
             return iter;
 
@@ -214,6 +218,7 @@ typedef struct AVLnode {
     String courseCode;//key
     String course;
     int creditHours;
+    String department;
     String topics;
 
     pAvl left;
@@ -225,24 +230,24 @@ typedef struct AVLnode {
 
 } AVLnode;
 
-pAvl makeEmpty(pAvl T) {
+pAvl makeEmptyTree(pAvl T) {
     if (T != NULL) {
-        makeEmpty(T->left);
-        makeEmpty(T->right);
+        makeEmptyTree(T->left);
+        makeEmptyTree(T->right);
         free(T);
     }
     return NULL;
 }
 
-pAvl find(String courseCode, pAvl T) {
+pAvl findTreeNode(String courseCode, pAvl T) {
     if (T == NULL) {
         return NULL;
     }
     if (strcmp(courseCode, T->courseCode) < 0) {
-        return find(courseCode, T->left);
+        return findTreeNode(courseCode, T->left);
     }
     else if (strcmp(courseCode, T->courseCode) > 0) {
-        return find(courseCode, T->right);
+        return findTreeNode(courseCode, T->right);
     }
     else {
         return T;
@@ -451,11 +456,66 @@ void welcome() {
 
 }
 
+void memoryMsg() {
+    red();
+    printf("OUT OF MEMORY!\n");
+    reset();
+}
+
+char *trimString(char *str) {  //FREE
+    size_t len = strlen(str);
+
+    while (isspace(str[len - 1])) --len;
+    while (*str && isspace(*str)) ++str, --len;
+
+    return strndup(str, len);
+}
+
+
+void readFile(pAvl root) {
+    FILE *in = fopen("courses.txt", "r");
+    if (in == null) {
+        memoryMsg();
+        exit(1);
+    }
+    char buffer[MAX_LINE];
+    String leftStr;
+    String rightStr;
+    String strCourse, strHours, strCourseCode, strDep;
+    String HCD;
+
+    pAvl tmpAvlNode = null;
+
+    while (fgets(buffer, MAX_LINE, in)) {
+        tmpAvlNode = malloc(sizeof(AVLnode));
+        if (tmpAvlNode == null) {
+            memoryMsg();
+            exit(1);
+        }
+
+
+        strcpy(leftStr, strtok(buffer, "/"));//left of '/'
+        strcpy(rightStr, strtok(null,   "/"));//right
+
+        //left stuff
+        strcpy(tmpAvlNode->course, strtok(leftStr, ":"));
+        strcpy(HCD, strtok(null, ":"));
+        strcpy(tmpAvlNode->creditHours, atoi(strtok(HCD, "#")));
+        strcpy(tmpAvlNode->courseCode , strtok(null, "#"));
+        strcpy(tmpAvlNode->department, strtok(null, "#"));
+
+        //while loop to keep tracking of topics...
+
+
+
+    }
+}
+
 
 int main() {
 
     pAvl tree;
-    tree = makeEmpty(tree);
+    tree = makeEmptyTree(tree);
 
     //the same sequence of inderting elements in the example
     tree = insert("1", tree);
