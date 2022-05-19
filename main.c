@@ -30,15 +30,14 @@ Reset: \033[0m
 */
 
 #define null NULL
-#define MAX_STRING 100
-#define MAX_LINE 300
+#define MAX_STRING 250
+#define MAX_LINE 1000
 
 
 typedef char String[MAX_STRING];
 
 //  =================================================LIST FUNCTIONS AND STUFF==================================
 typedef struct listNode {
-
 
     String topic;
     struct listNode *next;
@@ -134,14 +133,21 @@ void insertAtNodeList(String x, listNode *head, listNode *p) {
 //    free(tmp);
 }
 
-void insertAtBeginningList(String x, listNode *head) {
-    listNode *tmp = malloc(sizeof(listNode));
-    strcpy(tmp->topic, x);
-    tmp->next = head->next;
+void insertAtEndList(String x, listNode *head) {
+    listNode *newNode = malloc(sizeof(listNode));
+    if (newNode == null) {
+       printf("out of memory!\n");
+        exit(1);
+    }
+    strcpy(newNode->topic , x);
+    newNode->next = null;
 
-    head->next = tmp;
+    pNode tmp = head;
+    while(tmp->next != NULL){
+        tmp = tmp->next;
+    }
 
-//    free(tmp);
+    tmp->next = newNode;
 
 }
 
@@ -189,6 +195,7 @@ listNode *findNodeList(String x, listNode *head) {
 
     }
 
+    return null;
 
 }
 
@@ -219,7 +226,7 @@ typedef struct AVLnode {
     String course;
     int creditHours;
     String department;
-    String topics;
+    pNode topicsList;
 
     pAvl left;
     pAvl right;
@@ -361,24 +368,29 @@ pAvl doubleRotateWithRight(pAvl K1) {
 
 /* START: fig4_37.txt */
 //ADD THE NEW ARGUMENTS
-pAvl insert(String courseCode, pAvl T) {
+pAvl insert(AVLnode treeNode, pAvl T) {
     if (T == NULL) {
         /* Create and return a one-listNode tree */
         T = malloc(sizeof(AVLnode));
+
         if (T == NULL) {
             printf("Out of space!!!");
         }
+
         else {
             //HERE WE ASSIGN THE VALUES
-            strcpy(T->courseCode, courseCode);
+            // TRY W/OUT *
+
+            *T = treeNode;
+//            strcpy(T->courseCode, courseCode);
             T->height = 0;
             T->left = T->right = NULL;
         }
     }
-    else if (strcmp(courseCode, T->courseCode) < 0) {
-        T->left = insert(courseCode, T->left);
+    else if (strcmp( treeNode.courseCode, T->courseCode) < 0) {
+        T->left = insert(treeNode, T->left);
         if (height(T->left) - height(T->right) == 2) {
-            if (strcmp(courseCode, T->left->courseCode) < 0) {
+            if (strcmp(treeNode.courseCode, T->left->courseCode) < 0) {
                 T = singleRotateWithLeft(T);
             }
             else {
@@ -386,11 +398,11 @@ pAvl insert(String courseCode, pAvl T) {
             }
         }
     }
-    else if (strcmp(courseCode, T->courseCode) > 0) {
+    else if (strcmp(treeNode.courseCode, T->courseCode) > 0) {
 
-        T->right = insert(courseCode, T->right);
+        T->right = insert(treeNode, T->right);
         if (height(T->right) - height(T->left) == 2) {
-            if (strcmp(courseCode, T->right->courseCode) > 0) {
+            if (strcmp(treeNode.courseCode, T->right->courseCode) > 0) {
                 T = singleRotateWithRight(T);
             }
             else {
@@ -478,7 +490,6 @@ void readFile(pAvl root) {
         memoryMsg();
         exit(1);
     }
-    char buffer[MAX_LINE];
     String leftStr;
     String rightStr;
     String strCourse, strHours, strCourseCode, strDep;
@@ -486,6 +497,7 @@ void readFile(pAvl root) {
 
     pAvl tmpAvlNode = null;
 
+    char buffer[MAX_LINE];
     while (fgets(buffer, MAX_LINE, in)) {
         tmpAvlNode = malloc(sizeof(AVLnode));
         if (tmpAvlNode == null) {
@@ -493,18 +505,33 @@ void readFile(pAvl root) {
             exit(1);
         }
 
-
         strcpy(leftStr, strtok(buffer, "/"));//left of '/'
         strcpy(rightStr, strtok(null,   "/"));//right
 
         //left stuff
-        strcpy(tmpAvlNode->course, strtok(leftStr, ":"));
-        strcpy(HCD, strtok(null, ":"));
-        strcpy(tmpAvlNode->creditHours, atoi(strtok(HCD, "#")));
-        strcpy(tmpAvlNode->courseCode , strtok(null, "#"));
-        strcpy(tmpAvlNode->department, strtok(null, "#"));
+        strcpy(tmpAvlNode->course, trimString( strtok(leftStr, ":")));
+        strcpy(HCD, trimString(strtok(null, ":")));
+        tmpAvlNode->creditHours =  atoi(strtok(HCD, "#"));
+        strcpy(tmpAvlNode->courseCode , trimString(strtok(null, "#")));
+        strcpy(tmpAvlNode->department, trimString(strtok(null, "#")));
+        // loop through the string to extract all other tokens
+        tmpAvlNode->topicsList = makeEmptyList(tmpAvlNode->topicsList);
+        char * token = strtok(rightStr, ",");
+//        printf("topics\n");
+        while( token != NULL ) {
+//            printf("%s ",token);
+            insertAtEndList(token, tmpAvlNode->topicsList);
+            token = strtok(NULL, ",");
+        }
 
-        //while loop to keep tracking of topics...
+        char *last = strrchr(rightStr, ',');
+        if (last != NULL) {
+            printf("Last token: '%s'\n", last+1);
+        }
+
+        printf("\n");
+
+        insert(*tmpAvlNode, root);
 
 
 
@@ -514,12 +541,15 @@ void readFile(pAvl root) {
 
 int main() {
 
-    pAvl tree;
-    tree = makeEmptyTree(tree);
+    pAvl root = NULL;
+    makeEmptyTree(root);
+    readFile(root);
 
+//  tree = insert("1", tree);
+//    tree = insert("2", tree);
     //the same sequence of inderting elements in the example
-    tree = insert("1", tree);
-    tree = insert("2", tree);
+//    tree = insert("1", tree);
+//    tree = insert("2", tree);
 //    tree = insert(3, tree);
 //    tree = insert(4, tree);
 //    tree = insert(5, tree);
@@ -534,7 +564,7 @@ int main() {
 //    tree = insert(10, tree);
 
     printf("Test to print the tree (In-Order):\n");
-    printInOrder(tree);
+//    printInOrder(root);
 
     return 0;
 }
