@@ -237,6 +237,8 @@ typedef struct AVLnode {
 
 } AVLnode;
 
+void printDep();
+
 pAvl makeEmptyTree(pAvl T) {
     if (T != NULL) {
         makeEmptyTree(T->left);
@@ -423,7 +425,8 @@ pAvl insert(AVLnode treeNode, pAvl T) {
 void printInOrder(pAvl t) {
     if (t != NULL) {
         printInOrder(t->left);
-        printf("%s\t", t->courseCode);
+        printf("%s:%s %d %s ", t->courseCode, t->course, t->creditHours, t->department);
+        printList(t->topicsList);
         printInOrder(t->right);
     }
     printf("\n");
@@ -504,24 +507,24 @@ pAvl deleteTreeNode(pAvl root, String courseCode) {
 
     // Left Left Case
     if (balance > 1 && getBalance(root->left) >= 0) {
-        return singleRotateWithRight(root);
+        return singleRotateWithLeft(root);
     }
 
     // Left Right Case
     if (balance > 1 && getBalance(root->left) < 0) {
-        root->left = singleRotateWithLeft(root->left);
-        return singleRotateWithRight(root);
+        root->left = singleRotateWithRight(root->left);
+        return singleRotateWithLeft(root);
     }
 
     // Right Right Case
     if (balance < -1 && getBalance(root->right) <= 0) {
-        return singleRotateWithLeft(root);
+        return singleRotateWithRight(root);
     }
 
     // Right Left Case
     if (balance < -1 && getBalance(root->right) > 0) {
-        root->right = singleRotateWithRight(root->right);
-        return singleRotateWithLeft(root);
+        root->right = singleRotateWithLeft(root->right);
+        return singleRotateWithRight(root);
     }
 
     return root;
@@ -552,13 +555,18 @@ void green() {
     printf("\033[0;32m");
 
 }
+void bold(){
+    printf("\033[1;3?m");
+}
 
 void reset() {
     printf("\033[0m");
 }
 
 void line() {
+    bold();
     printf("================================================================\n");
+    reset();
 }
 
 void welcome() {
@@ -640,6 +648,7 @@ pAvl readFile(pAvl root) {
 
 
     }
+    fclose(in);
     return root;
 }
 
@@ -686,11 +695,11 @@ pAvl secondChoice(pAvl root) {
 pAvl thirdChoice(pAvl root) {
     String dummyStr;
     int dummyInt;
+
     printf("INPUT COURSE CODED YOU'RE LOOKING FOR\n");
     scanf("%s", dummyStr);
     pAvl tmp = null;
     tmp = findTreeNode(dummyStr, root);
-
     if (tmp == null) {
         red();
         printf("COURSE NOT FOUND!\n");
@@ -702,16 +711,21 @@ pAvl thirdChoice(pAvl root) {
         printf("ENTER 1 TO CHANGE COURSE CODE\n2 TO CHANGE COURSE NAME\n3.CREDIT HOURS\n4.DEPARTMENT\n5.TOPICS LIST \n-1 TO QUIT\n");
         scanf("%d", &dummyInt);
         if (dummyInt == 1) {
+            root = deleteTreeNode(root, dummyStr);
+
             printf("INPUT NEW COURSE CODE\n");
             scanf("%s", dummyStr);
             pAvl newNode = null;
+            newNode = malloc(sizeof(AVLnode));
+            *newNode = *tmp;
             strcpy(newNode->courseCode, dummyStr);
-            newNode->topicsList = tmp->topicsList;
-            strcpy(newNode->department, tmp->department);
-            newNode->creditHours = tmp->creditHours;
-            strcpy(newNode->course, tmp->course);
-            root = deleteTreeNode(tmp, dummyStr);
+//            newNode->topicsList = tmp->topicsList;
+//            strcpy(newNode->department, tmp->department);
+//            newNode->creditHours = tmp->creditHours;
+//            strcpy(newNode->course, tmp->course);
+
             root = insert(*newNode, root);
+
 
         }
 
@@ -799,6 +813,59 @@ pAvl thirdChoice(pAvl root) {
             reset();
         }
     }
+    return root;
+}
+
+void fifhtChoice(pAvl root) {
+
+    String dummyString;
+    printf("INPUT COURSE CODE YOU WANT TO SEE ITS LIST\n");
+    scanf("%s", dummyString);
+    pAvl tmp = null;
+    tmp = findTreeNode(dummyString, root);
+    printList(tmp->topicsList);
+
+}
+
+void printDep(pAvl t, String str) {
+
+    if (t != NULL) {
+        printDep(t->left,str);
+
+        if (strcmp(t->department, str) == 0) {
+            printf("%s\n", t->courseCode);
+        }
+        printDep(t->left, str);
+
+    }
+    printf("\n");
+
+}
+
+void sixthChoice(pAvl root ) {
+    fgetc(stdin);//GETS RID OF NEWLINE
+    String tmpDep;
+    printf("INPUT DEPARTMENT\n");
+    fgets(tmpDep, MAX_STRING, stdin);
+
+    strcpy(tmpDep, trimString(tmpDep));
+    for (int i = 0; i < strlen(tmpDep); ++i) {
+        if (tmpDep[i] == '\n') {
+            tmpDep[i] = '\0';
+        }
+    }
+    printDep(root, tmpDep);
+
+}
+
+pAvl seventhChoice(pAvl root) {
+
+    String dummyStr;
+    printf("INPUT CODE YOU WANT TO DELETE \n");
+    scanf("%s", dummyStr);
+
+    return deleteTreeNode(root, dummyStr);
+
 
 }
 
@@ -850,15 +917,35 @@ int main() {
                 line();
                 break;
             case 2:
-                secondChoice(root);
+                root = secondChoice(root);
                 line();
                 break;
 
+            case 3:
+                root = thirdChoice(root);
+                break;
 
             case 4:
 
                 printInOrder(root);
                 line();
+                break;
+
+            case 5:
+                fifhtChoice(root);
+                line();
+                break;
+
+            case 6:
+                sixthChoice(root);
+                line();
+                break;
+
+            case 7:
+                root = seventhChoice(root);
+                line();
+
+
                 break;
 
             case 11:
@@ -871,6 +958,7 @@ int main() {
             default:
                 red();
                 printf("INVALID INPUT!\n");
+                line();
                 reset();
 
 
