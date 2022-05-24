@@ -3,6 +3,8 @@
  * ID:1200546
  * github:https://github.com/faris771
  * IDE: JETBRAINS CLION
+ * COMPILER: gcc
+ * OS: LINUX UBUNTU
  */
 
 #include <stdio.h>
@@ -139,6 +141,7 @@ void insertAtEndList(String x, listNode *head) {
         printf("out of memory!\n");
         exit(1);
     }
+
     strcpy(newNode->topic, x);
     newNode->next = null;
 
@@ -236,6 +239,31 @@ typedef struct AVLnode {
 
 
 } AVLnode;
+
+void findCharNode(pAvl t, char x, pNode idList) {
+    if (t == NULL) {
+        return;
+    }
+
+    findCharNode(t->left, x, idList);
+    if (t->course[0] == x) {
+
+        printf("%s\n", t->courseCode);
+//            insertAtEndList(t->courseCode, idList);
+        pNode tmp = malloc(sizeof(listNode));
+        strcpy(tmp->topic, t->courseCode);
+//            printf("1\n");
+        tmp->next = idList->next;
+        idList->next = tmp;
+        printf("2\n");//1 WORKDS FINE
+
+//            deleteTreeNode(t, t->courseCode);
+    }
+
+    findCharNode(t->right, x, idList);
+
+
+}
 
 void printDep();
 
@@ -555,7 +583,8 @@ void green() {
     printf("\033[0;32m");
 
 }
-void bold(){
+
+void bold() {
     printf("\033[1;3?m");
 }
 
@@ -639,7 +668,14 @@ pAvl readFile(pAvl root) {
         char *token = strtok(rightStr, ",");
 //        printf("topics\n");
         while (token != NULL) {
-//            printf("%s ",token);
+
+            //fixes new line in the last segment
+
+            if (token[strlen(token) - 1] == '\n') {
+                token[strlen(token) - 1] = '\0';
+            }
+
+
             insertAtEndList(token, tmpAvlNode->topicsList);
             token = strtok(NULL, ",");
         }
@@ -830,20 +866,21 @@ void fifhtChoice(pAvl root) {
 void printDep(pAvl t, String str) {
 
     if (t != NULL) {
-        printDep(t->left,str);
+        printDep(t->left, str);
 
         if (strcmp(t->department, str) == 0) {
             printf("%s\n", t->courseCode);
         }
-        printDep(t->left, str);
+        printDep(t->right, str);
 
     }
     printf("\n");
 
 }
 
-void sixthChoice(pAvl root ) {
+void sixthChoice(pAvl root) {
     fgetc(stdin);//GETS RID OF NEWLINE
+
     String tmpDep;
     printf("INPUT DEPARTMENT\n");
     fgets(tmpDep, MAX_STRING, stdin);
@@ -869,6 +906,154 @@ pAvl seventhChoice(pAvl root) {
 
 }
 
+
+/*
+void FindByIllness(AVLNode t, string ill) {
+    if (t != NULL) {
+        FindByIllness(t->Left, ill);
+        if (strcasecmp(ill, t->data.Illness) == 0) {
+            printf("   %-15s", t->data.PatientName);
+            printf("   %c", t->data.Gender);
+            printf("\t\t");
+            stringToDate(t->data.admissionDate);
+            printf("   \t");
+            stringToDate(t->data.birthDate);
+            printf("\t%s", t->data.Illness);
+            printf("\t\t%s", t->data.Address);
+            printf("      \t%s", t->data.BloodType);
+            printf("\n");
+        }
+        FindByIllness(t->Right, ill);
+    }
+
+}
+
+
+*/
+
+
+pAvl eightChoice(pAvl root) {
+    printf("INPUT THE LETTER PLEASE \n");
+    char letter;
+    scanf(" %c", &letter);
+
+//    pAvl tmp = null;
+//    tmp = findTreeNode("^%c.*", letter);
+    pNode tmpID = makeEmptyList(tmpID);
+
+    if (tmpID == null) {
+        memoryMsg();
+    }
+    findCharNode(root, letter, tmpID);
+
+
+    for (pNode iter = tmpID; iter != null; iter = iter->next) {
+        root = deleteTreeNode(root, iter->topic);
+
+    }
+    tmpID = makeEmptyList(tmpID);
+    free(tmpID);
+
+    return root;
+}
+
+
+
+
+void findDepNode(pAvl t, String x, pNode idList) {
+    if (t == NULL) {
+        return;
+    }
+
+    findDepNode(t->left, x, idList);
+    if (strcmp(t->course,x) == 0) {
+
+        printf("%s\n", t->courseCode);
+//            insertAtEndList(t->courseCode, idList);
+        pNode tmp = malloc(sizeof(listNode));
+        strcpy(tmp->topic, t->courseCode);
+//            printf("1\n");
+        tmp->next = idList->next;
+        idList->next = tmp;
+        printf("2\n");//1 WORKDS FINE
+
+//            deleteTreeNode(t, t->courseCode);
+    }
+
+    findDepNode(t->right, x, idList);
+
+
+}
+
+
+
+
+
+pAvl ninthChoice(pAvl root) {
+
+    pNode tmpID = makeEmptyList(tmpID);
+
+    fgetc(stdin);
+    printf("PLEASE INPUT DEPARTMENT\n");
+    String str;
+    fgets(str, MAX_STRING, stdin);
+    findDepNode(root, str, tmpID);
+    for (pNode iter = tmpID; iter != null; iter = iter->next) {
+        root = deleteTreeNode(root, iter->topic);
+
+    }
+    tmpID = makeEmptyList(tmpID);
+    free(tmpID);
+
+    return root;
+
+}
+
+void filePrintInOrder(pAvl t, FILE *out) {
+
+    if (t != NULL) {
+        filePrintInOrder(t->left, out);
+
+        fprintf(out, "courseCode: %s     course name: %s      creditHours: %d      department: %s       topics: ",
+                t->courseCode, t->course, t->creditHours, t->department);
+
+//
+//        if (isEmptyList(t->topicsList)) {
+//            fprintf(out, "\n");
+////            return;
+//        }
+//        else {
+        for (listNode *iter = t->topicsList->next; iter != NULL; iter = iter->next) {
+            fprintf(out, "%s ", iter->topic);
+
+        }
+        fprintf(out, "\n");
+
+//        }
+
+        filePrintInOrder(t->right, out);
+    }
+
+}
+
+void save(pAvl root) {
+    FILE *out = fopen("offered_courses.txt", "w");
+    out = freopen(NULL, "w", out); // MAKES THE FILE EMPTY
+
+
+//    system(":> offered_courses.txt"); FOR LINUX
+    if (out == null) {
+        red();
+        printf("COULDN'T OPEN FILE\n");
+        reset();
+        return;
+    }
+    filePrintInOrder(root, out);
+
+    fclose(out);
+}
+
+
 int main() {
     pAvl root = NULL;
     bool isRead = false;
@@ -880,7 +1065,6 @@ int main() {
 
 
     int selection;
-
     while (true) {
         printf("1. Read the file courses.txt file and create the tree.\n"
                "2. Insert a new course from the user with all its associated data.\n"
@@ -948,6 +1132,23 @@ int main() {
 
                 break;
 
+
+            case 8:
+                root = eightChoice(root);
+                line();
+                break;
+
+
+            case 9:
+                root = ninthChoice(root);
+                line();
+                break;
+
+
+            case 10 :
+                save(root);
+                break;
+
             case 11:
                 yellow();
                 printf("THANK YOU COME AGAIN!!\n");
@@ -955,6 +1156,7 @@ int main() {
                 return 0;
                 line();
                 break;
+
             default:
                 red();
                 printf("INVALID INPUT!\n");
