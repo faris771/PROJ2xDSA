@@ -101,11 +101,20 @@ void deleteList(listNode *head) {
 listNode *findPrevNodeList(String x, listNode *head) {
     listNode *i = null;
 
-    for (i = head; i != null && strcmp(i->next->topic, x) != 0; i = i->next) {
+//    for (i = head; i ->next!=null ; i = i->next) {
+//
+//        if (strcmp(i->next->topic, x) == 0) {
+//            break;
+//
+//        }
+//    }
+
+    for (i = head; i != null && strcmp( i->next->topic , x) != 0; i = i->next) {
 
     }
 
 
+    printf("prev\n");
     return i;
 
 
@@ -117,7 +126,7 @@ void printList(listNode *head) {
         return;
     }
     for (listNode *iter = head->next; iter != NULL; iter = iter->next) {
-        printf("%s ", iter->topic);
+        printf("%s   ", iter->topic);
 
     }
     printf("\n");
@@ -159,16 +168,60 @@ void deleteNodeList(String x, listNode *head) {
 //    for (listNode *i = head;i!= null && i;  < ; ++) {
 //
 //    }
-    listNode *tmp = null;
+    bool isLast;
 
-    listNode *prevNode = findPrevNodeList(x, head);
-    if (!isLastList(prevNode, head)) {
-        tmp = prevNode->next;
-        prevNode->next = tmp->next;
-        free(tmp);
+    for (pNode i = head; i->next != null ; i = i->next) {
+
+//        printf("%s\n", i->topic);
+
+//        isLast = i->next == null;
+//
+//        if (strcmp(i->topic, x) == 0) {
+//            pNode newTmp = null;
+//            newTmp = i;
+//            i->next = newTmp->next;
+//            free(newTmp);
+//            return;
+//
+//        }
+        if (strcmp(i->next->topic, x) == 0 ) {
+            pNode newTmp = null;
+            newTmp = i->next;
+
+            i->next = newTmp->next;
+            free(newTmp);
+            printf("\033[0;32m");
+            printf("DELETED\n");
+            printf("\033[0m");
+
+            return;
+
+        }
+
+
 
 
     }
+    printf("\033[1;31m");
+
+    printf("TOPIC NOT FOUND !\n");
+
+    printf("\033[0m");
+
+//
+//
+//    listNode *tmp = null;
+//
+//
+//    listNode *prevNode = findPrevNodeList(x, head);
+//    printf("test\n");
+////    if (!isLastList(prevNode, head)) {
+//    tmp = prevNode->next;
+//    prevNode->next = tmp->next;
+//    free(tmp);
+//
+//    printf("test\n");
+////    }algorithms
 
 
 }
@@ -189,7 +242,8 @@ listNode *findNodeList(String x, listNode *head) {
 //    }
 //
 //    printf("not found\n");
-    for (listNode *iter = head->next; iter != NULL; iter = iter->next) {
+    for (listNode *iter = head; iter != NULL; iter = iter->next) {
+
         if (strcmp(iter->topic, x) == 0) {
             printf("found\n");
             return iter;
@@ -248,14 +302,14 @@ void findCharNode(pAvl t, char x, pNode idList) {
     findCharNode(t->left, x, idList);
     if (t->course[0] == x) {
 
-        printf("%s\n", t->courseCode);
+//        printf("%s\n", t->courseCode);
 //            insertAtEndList(t->courseCode, idList);
         pNode tmp = malloc(sizeof(listNode));
         strcpy(tmp->topic, t->courseCode);
 //            printf("1\n");
         tmp->next = idList->next;
         idList->next = tmp;
-        printf("2\n");//1 WORKDS FINE
+//        printf("2\n");//1 WORKDS FINE
 
 //            deleteTreeNode(t, t->courseCode);
     }
@@ -453,11 +507,12 @@ pAvl insert(AVLnode treeNode, pAvl T) {
 void printInOrder(pAvl t) {
     if (t != NULL) {
         printInOrder(t->left);
-        printf("%s:%s %d %s ", t->courseCode, t->course, t->creditHours, t->department);
+        fprintf(stdout, "courseCode: %s     course name: %s      creditHours: %d      department: %s       topics: ",
+                t->courseCode, t->course, t->creditHours, t->department);
         printList(t->topicsList);
         printInOrder(t->right);
     }
-    printf("\n");
+//    printf("\n");
 }
 
 int getBalance(pAvl N) {
@@ -471,6 +526,7 @@ pAvl deleteTreeNode(pAvl root, String courseCode) {
     // STEP 1: PERFORM STANDARD BST DELETE
 
     if (root == NULL) {
+
         return root;
     }
 
@@ -633,7 +689,7 @@ pAvl readFile(pAvl root) {
     FILE *in = fopen("courses.txt", "r");
     if (in == null) {
         red();
-        printf("FILE NOT FOUND!\n");
+        printf("CAN'T READ FILE! \n");
         reset();
         return null;
     }
@@ -652,7 +708,10 @@ pAvl readFile(pAvl root) {
             memoryMsg();
             exit(1);
         }
+        if (buffer[strlen(buffer) - 1] == '\n') {
+            buffer[strlen(buffer) - 1] = '\0';
 
+        }
         strcpy(leftStr, strtok(buffer, "/"));//left of '/'
         strcpy(rightStr, strtok(null, "/"));//right
 
@@ -676,7 +735,7 @@ pAvl readFile(pAvl root) {
             }
 
 
-            insertAtEndList(token, tmpAvlNode->topicsList);
+            insertAtEndList(trimString(token), tmpAvlNode->topicsList);
             token = strtok(NULL, ",");
         }
 
@@ -700,24 +759,47 @@ pAvl secondChoice(pAvl root) {
     }
     printf("1.PLEASE ENTER THE COURSE CODE YOU WISH TO ADD!\n");
     scanf("%s", dummyStr);
+    pAvl testNode = findTreeNode(dummyStr, root);
+    if (testNode != null) {
+        red();
+        printf("COURSE ALREADY EXIST!!\n");
+        reset();
+        return root;
+
+    }
     strcpy(tmpNode->courseCode, dummyStr);
     printf("2. COURSE NAME:\n");
     scanf("%s", dummyStr);
     strcpy(tmpNode->course, dummyStr);
+//    fgetc(stdin);
     printf("3. CREDIT HOURS:\n");
     scanf("%d", &dummyInt);
     tmpNode->creditHours = dummyInt;
+    fgetc(stdin);
+
     printf("4. DEPARTMENT:\n");
-    scanf("%s", dummyStr);
+    fgets(dummyStr, MAX_STRING, stdin);
+    if (dummyStr[strlen(dummyStr) - 1] == '\n') {
+        dummyStr[strlen(dummyStr) - 1] = '\0';
+
+    }
     strcpy(tmpNode->department, dummyStr);
 
+    String topicsStr;
     while (true) {
         printf("5.PLEASE INPUT TOPICS ONE BY ONE, OR PRESS -1 WHEN YOU ARE DONE\n");
-        scanf("%s", dummyStr);
-        if (strcmp(dummyStr, "-1") == 0) {
+        fflush(stdin);
+//        fgetc(stdin);
+//        scanf("%s", topicsStr);
+        fgets(topicsStr, MAX_STRING, stdin);
+        if (topicsStr[strlen(topicsStr) - 1] == '\n') {
+            topicsStr[strlen(topicsStr) - 1] = '\0';
+
+        }
+        if (strcmp(topicsStr, "-1") == 0) {
             break;
         }
-        insertAtEndList(dummyStr, tmpNode->topicsList);
+        insertAtEndList(topicsStr, tmpNode->topicsList);
 
     }
     root = insert(*tmpNode, root);
@@ -732,7 +814,7 @@ pAvl thirdChoice(pAvl root) {
     String dummyStr;
     int dummyInt;
 
-    printf("INPUT COURSE CODED YOU'RE LOOKING FOR\n");
+    printf("INPUT COURSE CODE YOU'RE LOOKING FOR\n");
     scanf("%s", dummyStr);
     pAvl tmp = null;
     tmp = findTreeNode(dummyStr, root);
@@ -740,7 +822,7 @@ pAvl thirdChoice(pAvl root) {
         red();
         printf("COURSE NOT FOUND!\n");
         reset();
-        return null;
+        return root;
     }
     while (true) {
 
@@ -767,7 +849,8 @@ pAvl thirdChoice(pAvl root) {
 
         else if (dummyInt == 2) {
             printf("PLEASE INPUT NEW COURSE NAME\n");
-            scanf("%s", dummyStr);
+            fgetc(stdin);
+            fgets(dummyStr, MAX_STRING, stdin);
             strcpy(tmp->course, dummyStr);
 
         }
@@ -779,7 +862,8 @@ pAvl thirdChoice(pAvl root) {
         }
         else if (dummyInt == 4) {
             printf("PLEASE INPUT NEW DEPARTMENT NAME\n");
-            scanf("%s", dummyStr);
+            fgetc(stdin);
+            fgets(dummyStr, MAX_STRING, stdin);
             strcpy(tmp->department, dummyStr);
 
         }
@@ -791,21 +875,36 @@ pAvl thirdChoice(pAvl root) {
                 scanf("%d", &innerInt);
                 if (innerInt == 1) {
                     printf("INPUT NEW TOPIC\n");
-                    scanf("%s", innerStr);
+                    fgetc(stdin);
+                    fgets(innerStr, MAX_STRING, stdin);
+
+
                     insertAtEndList(innerStr, tmp->topicsList);
 
 
                 }
                 else if (innerInt == 2) {
                     printf("TOPIC YOU WISH TO DELETE\n");
-                    scanf("%s", innerStr);
+                    fgetc(stdin);
+                    fgets(innerStr, MAX_STRING, stdin);
+                    if (innerStr[strlen(innerStr) - 1] == '\n') {
+                        innerStr[strlen(innerStr) - 1] = '\0';
+
+                    }
                     deleteNodeList(innerStr, tmp->topicsList);
                 }
                 else if (innerInt == 3) {
                     deleteList(tmp->topicsList);
                 }
                 else if (innerInt == 4) {
-                    pNode tmpTopic = findNodeList(dummyStr, tmp->topicsList);
+                    printf("PLEASE INPUT TOPIC YOU WISH TO UPDATE\n");
+                    fgetc(stdin);
+                    fgets(innerStr, MAX_STRING, stdin);
+                    if (innerStr[strlen(innerStr )- 1] == '\n') {
+                        innerStr[strlen(innerStr )- 1] = '\0';
+
+                    }
+                    pNode tmpTopic = findNodeList(innerStr, tmp->topicsList);
                     if (tmpTopic == null) {
                         red();
                         printf("TOPIC NOT FOUND!\n");
@@ -814,7 +913,8 @@ pAvl thirdChoice(pAvl root) {
                     else {
                         String strTmp;
                         printf("ENTER UPDATED TOPIC PLEASE\n");
-                        scanf("%s", strTmp);
+//                        fgetc(stdin);
+                        fgets(strTmp, MAX_STRING, stdin);
                         strcpy(tmpTopic->topic, strTmp);
 
                     }
@@ -841,6 +941,7 @@ pAvl thirdChoice(pAvl root) {
             blue();
             printf("CHANGE PHASE ENDED\n");
             reset();
+            line();
             break;
         }
         else {
@@ -958,17 +1059,15 @@ pAvl eightChoice(pAvl root) {
 }
 
 
-
-
 void findDepNode(pAvl t, String x, pNode idList) {
     if (t == NULL) {
         return;
     }
 
     findDepNode(t->left, x, idList);
-    if (strcmp(t->course,x) == 0) {
+    if (strcmp(t->department, x) == 0) {
 
-        printf("%s\n", t->courseCode);
+//        printf("%s\n", t->courseCode);
 //            insertAtEndList(t->courseCode, idList);
         pNode tmp = malloc(sizeof(listNode));
         strcpy(tmp->topic, t->courseCode);
@@ -986,9 +1085,6 @@ void findDepNode(pAvl t, String x, pNode idList) {
 }
 
 
-
-
-
 pAvl ninthChoice(pAvl root) {
 
     pNode tmpID = makeEmptyList(tmpID);
@@ -997,8 +1093,12 @@ pAvl ninthChoice(pAvl root) {
     printf("PLEASE INPUT DEPARTMENT\n");
     String str;
     fgets(str, MAX_STRING, stdin);
+    if (str[strlen(str) - 1] == '\n') {
+        str[strlen(str) - 1] = '\0';
+    }
     findDepNode(root, str, tmpID);
     for (pNode iter = tmpID; iter != null; iter = iter->next) {
+        printf("%s\n", iter->topic);
         root = deleteTreeNode(root, iter->topic);
 
     }
@@ -1053,6 +1153,53 @@ void save(pAvl root) {
     fclose(out);
 }
 
+void art() {
+    printf("⠀⠀⠘⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡜⠀⠀⠀\n"
+           "⠀⠀⠀⠑⡀THANK YOU COME AGAIN⠀⠀⠀⠀ ⠀⠀⠀\n"
+           "⠀⠀⠀⠀⠈⠢⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠴⠊⠀⠀⠀⠀⠀\n"
+           "⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⢀⣀⣀⣀⣀⣀⡀⠤⠄⠒⠈⠀⠀⠀⠀⠀⠀⠀⠀\n"
+           "⠀⠀⠀⠀⠀⠀⠀⠘⣀⠄⠊⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n"
+           "⠀\n"
+           "⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⠛⠛⠋⠉⠈⠉⠉⠉⠉⠛⠻⢿⣿⣿⣿⣿⣿⣿⣿\n"
+           "⣿⣿⣿⣿⣿⡿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⢿⣿⣿⣿⣿\n"
+           "⣿⣿⣿⣿⡏⣀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣤⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿\n"
+           "⣿⣿⣿⢏⣴⣿⣷⠀⠀⠀⠀⠀⢾⣿⣿⣿⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀⠈⣿⣿\n"
+           "⣿⣿⣟⣾⣿⡟⠁⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣷⢢⠀⠀⠀⠀⠀⠀⠀⢸⣿\n"
+           "⣿⣿⣿⣿⣟⠀⡴⠄⠀⠀⠀⠀⠀⠀⠙⠻⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⣿\n"
+           "⣿⣿⣿⠟⠻⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠶⢴⣿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⣿\n"
+           "⣿⣁⡀⠀⠀⢰⢠⣦⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣿⣿⣿⣿⣿⡄⠀⣴⣶⣿⡄⣿\n"
+           "⣿⡋⠀⠀⠀⠎⢸⣿⡆⠀⠀⠀⠀⠀⠀⣴⣿⣿⣿⣿⣿⣿⣿⠗⢘⣿⣟⠛⠿⣼\n"
+           "⣿⣿⠋⢀⡌⢰⣿⡿⢿⡀⠀⠀⠀⠀⠀⠙⠿⣿⣿⣿⣿⣿⡇⠀⢸⣿⣿⣧⢀⣼\n"
+           "⣿⣿⣷⢻⠄⠘⠛⠋⠛⠃⠀⠀⠀⠀⠀⢿⣧⠈⠉⠙⠛⠋⠀⠀⠀⣿⣿⣿⣿⣿\n"
+           "⣿⣿⣧⠀⠈⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠟⠀⠀⠀⠀⢀⢃⠀⠀⢸⣿⣿⣿⣿\n"
+           "⣿⣿⡿⠀⠴⢗⣠⣤⣴⡶⠶⠖⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡸⠀⣿⣿⣿⣿\n"
+           "⣿⣿⣿⡀⢠⣾⣿⠏⠀⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠛⠉⠀⣿⣿⣿⣿\n"
+           "⣿⣿⣿⣧⠈⢹⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣿⣿⣿⣿\n"
+           "⣿⣿⣿⣿⡄⠈⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣴⣾⣿⣿⣿⣿⣿\n"
+           "⣿⣿⣿⣿⣧⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿\n"
+           "⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿\n"
+           "⣿⣿⣿⣿⣿⣦⣄⣀⣀⣀⣀⠀⠀⠀⠀⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿\n"
+           "⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿\n"
+           "⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀⠀⠙⣿⣿⡟⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿\n"
+           "⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀⠁⠀⠀⠹⣿⠃⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿\n"
+           "⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⢐⣿⣿⣿⣿⣿⣿⣿⣿⣿\n"
+           "⣿⣿⣿⣿⠿⠛⠉⠉⠁⠀⢻⣿⡇⠀⠀⠀⠀⠀⠀⢀⠈⣿⣿⡿⠉⠛⠛⠛⠉⠉\n"
+           "⣿⡿⠋⠁⠀⠀⢀⣀⣠⡴⣸⣿⣇⡄⠀⠀⠀⠀⢀⡿⠄⠙⠛⠀⣀⣠⣤⣤⠄\n");
+
+}
+
+void deleteWholeTree(pAvl root) {
+    if (root == NULL) {
+        return;
+    }
+
+    deleteWholeTree(root->left);
+    deleteWholeTree(root->right);
+
+
+    free(root);
+}
+
 
 int main() {
     pAvl root = NULL;
@@ -1101,31 +1248,74 @@ int main() {
                 line();
                 break;
             case 2:
+                if (!isRead) {
+                    red();
+                    printf("PLEASE  PRESS 1 FIRST TO READ THE FILE AND MAKE THE TREE :)\n");
+                    reset();
+                    line();
+                    break;
+                }
                 root = secondChoice(root);
                 line();
                 break;
 
             case 3:
+                if (!isRead) {
+                    red();
+                    printf("PLEASE  PRESS 1 FIRST TO READ THE FILE AND MAKE THE TREE :)\n");
+                    reset();
+                    line();
+                    break;
+                }
                 root = thirdChoice(root);
                 break;
 
             case 4:
-
+                if (!isRead) {
+                    red();
+                    printf("PLEASE  PRESS 1 FIRST TO READ THE FILE AND MAKE THE TREE :)\n");
+                    reset();
+                    line();
+                    break;
+                }
                 printInOrder(root);
                 line();
                 break;
 
             case 5:
+                if (!isRead) {
+                    red();
+                    printf("PLEASE  PRESS 1 FIRST TO READ THE FILE AND MAKE THE TREE :)\n");
+                    reset();
+                    line();
+                    break;
+                }
+
                 fifhtChoice(root);
                 line();
                 break;
 
             case 6:
+                if (!isRead) {
+                    red();
+                    printf("PLEASE  PRESS 1 FIRST TO READ THE FILE AND MAKE THE TREE :)\n");
+                    reset();
+                    line();
+                    break;
+                }
                 sixthChoice(root);
                 line();
                 break;
 
             case 7:
+                if (!isRead) {
+                    red();
+                    printf("PLEASE  PRESS 1 FIRST TO READ THE FILE AND MAKE THE TREE :)\n");
+                    reset();
+                    line();
+                    break;
+                }
+
                 root = seventhChoice(root);
                 line();
 
@@ -1134,27 +1324,64 @@ int main() {
 
 
             case 8:
+                if (!isRead) {
+                    red();
+                    printf("PLEASE  PRESS 1 FIRST TO READ THE FILE AND MAKE THE TREE :)\n");
+                    reset();
+                    line();
+                    break;
+                }
+
                 root = eightChoice(root);
+                green();
+                printf("COURSES DELETED SUCCESSFULLY\n");
+                reset();
                 line();
                 break;
 
 
             case 9:
+                if (!isRead) {
+                    red();
+                    printf("PLEASE  PRESS 1 FIRST TO READ THE FILE AND MAKE THE TREE :)\n");
+                    reset();
+                    line();
+                    break;
+                }
+
                 root = ninthChoice(root);
+//                green();
+//                printf("COURSES DELETED SUCCESSFULLY\n");
+//                reset();
                 line();
                 break;
 
 
             case 10 :
+                if (!isRead) {
+                    red();
+                    printf("PLEASE  PRESS 1 FIRST TO READ THE FILE AND MAKE THE TREE :)\n");
+                    reset();
+                    line();
+                    break;
+                }
+
                 save(root);
+                green();
+                printf("FILE SAVED SUCCESSFULLY!\n");
+                reset();
+                line();
                 break;
 
             case 11:
-                yellow();
-                printf("THANK YOU COME AGAIN!!\n");
+
+                deleteWholeTree(root);
+
+                bold();
+                art();
                 reset();
-                return 0;
                 line();
+                return 0;
                 break;
 
             default:
