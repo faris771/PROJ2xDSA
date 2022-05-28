@@ -1,7 +1,8 @@
 /**
  * AUTHOR:FARIS ABUFARHA
  * ID:1200546
- * github:https://github.com/faris771
+ * SEC:3
+ * REPO LINK:https://github.com/faris771/PROJ2xDSA
  * IDE: JETBRAINS CLION
  * COMPILER: gcc
  * OS: LINUX UBUNTU
@@ -12,7 +13,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
-
 
 /*
  *
@@ -101,22 +101,12 @@ void deleteList(listNode *head) {
 listNode *findPrevNodeList(String x, listNode *head) {
     listNode *i = null;
 
-//    for (i = head; i ->next!=null ; i = i->next) {
-//
-//        if (strcmp(i->next->topic, x) == 0) {
-//            break;
-//
-//        }
-//    }
-
-    for (i = head; i != null && strcmp( i->next->topic , x) != 0; i = i->next) {
+    for (i = head; i != null && strcmp(i->next->topic, x) != 0; i = i->next) {
 
     }
 
-
     printf("prev\n");
     return i;
-
 
 }
 
@@ -132,7 +122,6 @@ void printList(listNode *head) {
     printf("\n");
 }
 
-
 void insertAtNodeList(String x, listNode *head, listNode *p) {
 
     listNode *tmp = malloc(sizeof(listNode));
@@ -141,7 +130,6 @@ void insertAtNodeList(String x, listNode *head, listNode *p) {
     tmp->next = p->next;
     p->next = tmp;
 
-//    free(tmp);
 }
 
 void insertAtEndList(String x, listNode *head) {
@@ -160,31 +148,15 @@ void insertAtEndList(String x, listNode *head) {
     }
 
     tmp->next = newNode;
-
 }
 
 void deleteNodeList(String x, listNode *head) {
 
-//    for (listNode *i = head;i!= null && i;  < ; ++) {
-//
-//    }
     bool isLast;
 
-    for (pNode i = head; i->next != null ; i = i->next) {
+    for (pNode i = head; i->next != null; i = i->next) {
 
-//        printf("%s\n", i->topic);
-
-//        isLast = i->next == null;
-//
-//        if (strcmp(i->topic, x) == 0) {
-//            pNode newTmp = null;
-//            newTmp = i;
-//            i->next = newTmp->next;
-//            free(newTmp);
-//            return;
-//
-//        }
-        if (strcmp(i->next->topic, x) == 0 ) {
+        if (strcmp(i->next->topic, x) == 0) {
             pNode newTmp = null;
             newTmp = i->next;
 
@@ -198,50 +170,18 @@ void deleteNodeList(String x, listNode *head) {
 
         }
 
-
-
-
     }
-    printf("\033[1;31m");
+    printf("\033[1;31m"); //GREEN
 
     printf("TOPIC NOT FOUND !\n");
 
     printf("\033[0m");
-
-//
-//
-//    listNode *tmp = null;
-//
-//
-//    listNode *prevNode = findPrevNodeList(x, head);
-//    printf("test\n");
-////    if (!isLastList(prevNode, head)) {
-//    tmp = prevNode->next;
-//    prevNode->next = tmp->next;
-//    free(tmp);
-//
-//    printf("test\n");
-////    }algorithms
 
 
 }
 
 
 listNode *findNodeList(String x, listNode *head) {
-
-//    listNode *i = null;
-//    i = head->next;
-//
-//    while (i != null && i->topic != x) {
-//        i = i->next;
-//
-//        if (i->topic == x){
-//            printf("found!\n");
-//            return i;
-//        }
-//    }
-//
-//    printf("not found\n");
     for (listNode *iter = head; iter != NULL; iter = iter->next) {
 
         if (strcmp(iter->topic, x) == 0) {
@@ -256,13 +196,10 @@ listNode *findNodeList(String x, listNode *head) {
 
 }
 
-
-// give it a listNode ptr, and let it the head by making it pointing into a listNode
 listNode *makeEmptyList(listNode *head) {
 
     if (head != null) {
-        //delete list
-
+        deleteList(head);
     }
     head = malloc(sizeof(listNode));
     head->next = null;
@@ -290,8 +227,6 @@ typedef struct AVLnode {
     int height; //Balance information
 
 
-
-
 } AVLnode;
 
 void findCharNode(pAvl t, char x, pNode idList) {
@@ -302,11 +237,9 @@ void findCharNode(pAvl t, char x, pNode idList) {
     findCharNode(t->left, x, idList);
     if (t->course[0] == x) {
 
-//        printf("%s\n", t->courseCode);
-//            insertAtEndList(t->courseCode, idList);
+
         pNode tmp = malloc(sizeof(listNode));
         strcpy(tmp->topic, t->courseCode);
-//            printf("1\n");
         tmp->next = idList->next;
         idList->next = tmp;
 //        printf("2\n");//1 WORKDS FINE
@@ -367,9 +300,6 @@ pAvl findMax(pAvl T) {
     return T; // if it's null will return null
 }
 
-/* START: fig4_36.txt */
-
-
 int height(pAvl P) {
     if (P == NULL) {
         return -1;
@@ -379,16 +309,10 @@ int height(pAvl P) {
     }
 }
 
-/* END */
 
 int max(int Lhs, int Rhs) {
     return Lhs > Rhs ? Lhs : Rhs;
 }
-
-/* START: fig4_39.txt */
-/* This function can be called only if K2 has a left child */
-/* Perform a rotate between a listNode (K2) and its left child */
-/* Update heights, then return new root */
 
 pAvl singleRotateWithLeft(pAvl K2) {
     pAvl K1;
@@ -403,11 +327,6 @@ pAvl singleRotateWithLeft(pAvl K2) {
     return K1;  /* New root */
 }
 
-
-/* This function can be called only if K1 has a right child */
-/* Perform a rotate between a listNode (K1) and its right child */
-/* Update heights, then return new root */
-
 pAvl singleRotateWithRight(pAvl K1) {
     pAvl K2;
 
@@ -421,7 +340,6 @@ pAvl singleRotateWithRight(pAvl K1) {
     return K2;  /* New root */
 }
 
-/* START: fig4_41.txt */
 /* This function can be called only if K3 has a left */
 /* child and K3's left child has a right child */
 /* Do the left-right double rotation */
@@ -449,9 +367,6 @@ pAvl doubleRotateWithRight(pAvl K1) {
     return singleRotateWithRight(K1);
 }
 
-
-/* START: fig4_37.txt */
-//ADD THE NEW ARGUMENTS
 pAvl insert(AVLnode treeNode, pAvl T) {
     if (T == NULL) {
         /* Create and return a one-listNode tree */
@@ -525,30 +440,30 @@ int getBalance(pAvl N) {
 pAvl deleteTreeNode(pAvl root, String courseCode) {
     // STEP 1: PERFORM STANDARD BST DELETE
 
-    if (root == NULL) {
+    if (root == NULL) { // no more nodes
 
         return root;
     }
-
-    // If the key to be deleted is smaller than the
-    // root's key, then it lies in left subtree
-    if (strcmp(courseCode, root->courseCode) < 0) {
+    if (strcmp(courseCode, root->courseCode) <
+        0) {// if the key we want to save is smaller than current root go to left subtree
 
         root->left = deleteTreeNode(root->left, courseCode);
     }
 
-        // If the key to be deleted is greater than the
-        // root's key, then it lies in right subtree
-    else if (strcmp(courseCode, root->courseCode) > 0) {
+    else if (strcmp(courseCode, root->courseCode) >
+             0) { //else if the key we want to save is greater than current root go to right subtree
         root->right = deleteTreeNode(root->right, courseCode);
 
-        // if key is same as root's key, then This is
-        // the node to be deleted
     }
+        //else if we find the node we do the deletion
+
     else {
-        // node with only one child or no child
-        if ((root->left == NULL) || (root->right == NULL)) {
+        if ((root->left == NULL) ||
+            (root->right == NULL)) {        // node with only one child or no child (NOT A MID NODE)
+
             pAvl temp = root->left ? root->left : root->right;
+
+            //TMP WILL BE THE NOT NULL NODE THE CHILD OF ROOT
 
             // No child case
             if (temp == NULL) {
@@ -556,18 +471,26 @@ pAvl deleteTreeNode(pAvl root, String courseCode) {
                 root = NULL;
             }
             else { // One child case
-                *root = *temp;
-            } // Copy the contents of
+                *root = *temp;                          //(NODE) OR THE OPPOSITE
+                //                                      /
+            } // Copy the contents of               (NODE)
             // the non-empty child
             free(temp);
         }
         else {
-            // node with two children: Get the inorder
+            //CASE OF 2 CHILDREN
             // successor (smallest in the right subtree)
             pAvl temp = findMin(root->right);
 
+
+
             // Copy the inorder successor's data to this node
             strcpy(root->courseCode, temp->courseCode);
+            strcpy(root->course, temp->course);
+            root->creditHours = temp->creditHours;
+            strcpy(root->department, temp->department);
+            root->topicsList = temp->topicsList;
+
 
             // Delete the inorder successor
             root->right = deleteTreeNode(root->right, temp->courseCode);
@@ -734,13 +657,10 @@ pAvl readFile(pAvl root) {
                 token[strlen(token) - 1] = '\0';
             }
 
-
             insertAtEndList(trimString(token), tmpAvlNode->topicsList);
             token = strtok(NULL, ",");
         }
-
         root = insert(*tmpAvlNode, root);
-
 
     }
     fclose(in);
@@ -769,7 +689,14 @@ pAvl secondChoice(pAvl root) {
     }
     strcpy(tmpNode->courseCode, dummyStr);
     printf("2. COURSE NAME:\n");
-    scanf("%s", dummyStr);
+    fgetc(stdin);
+    fgets(dummyStr, MAX_STRING, stdin);
+    if (dummyStr[strlen(dummyStr) - 1] == '\n') {
+        dummyStr[strlen(dummyStr) - 1] = '\0';
+
+    }
+
+
     strcpy(tmpNode->course, dummyStr);
 //    fgetc(stdin);
     printf("3. CREDIT HOURS:\n");
@@ -789,8 +716,6 @@ pAvl secondChoice(pAvl root) {
     while (true) {
         printf("5.PLEASE INPUT TOPICS ONE BY ONE, OR PRESS -1 WHEN YOU ARE DONE\n");
         fflush(stdin);
-//        fgetc(stdin);
-//        scanf("%s", topicsStr);
         fgets(topicsStr, MAX_STRING, stdin);
         if (topicsStr[strlen(topicsStr) - 1] == '\n') {
             topicsStr[strlen(topicsStr) - 1] = '\0';
@@ -837,11 +762,6 @@ pAvl thirdChoice(pAvl root) {
             newNode = malloc(sizeof(AVLnode));
             *newNode = *tmp;
             strcpy(newNode->courseCode, dummyStr);
-//            newNode->topicsList = tmp->topicsList;
-//            strcpy(newNode->department, tmp->department);
-//            newNode->creditHours = tmp->creditHours;
-//            strcpy(newNode->course, tmp->course);
-
             root = insert(*newNode, root);
 
 
@@ -851,6 +771,10 @@ pAvl thirdChoice(pAvl root) {
             printf("PLEASE INPUT NEW COURSE NAME\n");
             fgetc(stdin);
             fgets(dummyStr, MAX_STRING, stdin);
+            if (dummyStr[strlen(dummyStr) - 1] == '\n') {
+                dummyStr[strlen(dummyStr) - 1] = '\0';
+
+            }
             strcpy(tmp->course, dummyStr);
 
         }
@@ -864,6 +788,10 @@ pAvl thirdChoice(pAvl root) {
             printf("PLEASE INPUT NEW DEPARTMENT NAME\n");
             fgetc(stdin);
             fgets(dummyStr, MAX_STRING, stdin);
+            if (dummyStr[strlen(dummyStr) - 1] == '\n') {
+                dummyStr[strlen(dummyStr) - 1] = '\0';
+
+            }
             strcpy(tmp->department, dummyStr);
 
         }
@@ -877,7 +805,10 @@ pAvl thirdChoice(pAvl root) {
                     printf("INPUT NEW TOPIC\n");
                     fgetc(stdin);
                     fgets(innerStr, MAX_STRING, stdin);
+                    if (innerStr[strlen(innerStr) - 1] == '\n') {
+                        innerStr[strlen(innerStr) - 1] = '\0';
 
+                    }
 
                     insertAtEndList(innerStr, tmp->topicsList);
 
@@ -900,8 +831,8 @@ pAvl thirdChoice(pAvl root) {
                     printf("PLEASE INPUT TOPIC YOU WISH TO UPDATE\n");
                     fgetc(stdin);
                     fgets(innerStr, MAX_STRING, stdin);
-                    if (innerStr[strlen(innerStr )- 1] == '\n') {
-                        innerStr[strlen(innerStr )- 1] = '\0';
+                    if (innerStr[strlen(innerStr) - 1] == '\n') {
+                        innerStr[strlen(innerStr) - 1] = '\0';
 
                     }
                     pNode tmpTopic = findNodeList(innerStr, tmp->topicsList);
@@ -960,6 +891,14 @@ void fifhtChoice(pAvl root) {
     scanf("%s", dummyString);
     pAvl tmp = null;
     tmp = findTreeNode(dummyString, root);
+    if (tmp == null) {
+        red();
+        printf("course not found\n");
+        reset();
+
+        return;
+
+    }
     printList(tmp->topicsList);
 
 }
@@ -970,7 +909,10 @@ void printDep(pAvl t, String str) {
         printDep(t->left, str);
 
         if (strcmp(t->department, str) == 0) {
-            printf("%s\n", t->courseCode);
+            fprintf(stdout, "courseCode: %s     course name: %s      creditHours: %d      department: %s       topics: ",
+                    t->courseCode, t->course, t->creditHours, t->department);
+            printList(t->topicsList);
+
         }
         printDep(t->right, str);
 
@@ -987,11 +929,10 @@ void sixthChoice(pAvl root) {
     fgets(tmpDep, MAX_STRING, stdin);
 
     strcpy(tmpDep, trimString(tmpDep));
-    for (int i = 0; i < strlen(tmpDep); ++i) {
-        if (tmpDep[i] == '\n') {
-            tmpDep[i] = '\0';
-        }
+    if (tmpDep[strlen(tmpDep) - 1] == '\n') {
+        tmpDep[strlen(tmpDep) - 1] = '\0';
     }
+
     printDep(root, tmpDep);
 
 }
@@ -1003,43 +944,18 @@ pAvl seventhChoice(pAvl root) {
     scanf("%s", dummyStr);
 
     return deleteTreeNode(root, dummyStr);
+    root->topicsList = makeEmptyList(root->topicsList);
+    free(root->topicsList);
 
 
-}
-
-
-/*
-void FindByIllness(AVLNode t, string ill) {
-    if (t != NULL) {
-        FindByIllness(t->Left, ill);
-        if (strcasecmp(ill, t->data.Illness) == 0) {
-            printf("   %-15s", t->data.PatientName);
-            printf("   %c", t->data.Gender);
-            printf("\t\t");
-            stringToDate(t->data.admissionDate);
-            printf("   \t");
-            stringToDate(t->data.birthDate);
-            printf("\t%s", t->data.Illness);
-            printf("\t\t%s", t->data.Address);
-            printf("      \t%s", t->data.BloodType);
-            printf("\n");
-        }
-        FindByIllness(t->Right, ill);
-    }
 
 }
-
-
-*/
 
 
 pAvl eightChoice(pAvl root) {
     printf("INPUT THE LETTER PLEASE \n");
     char letter;
     scanf(" %c", &letter);
-
-//    pAvl tmp = null;
-//    tmp = findTreeNode("^%c.*", letter);
     pNode tmpID = makeEmptyList(tmpID);
 
     if (tmpID == null) {
@@ -1066,17 +982,12 @@ void findDepNode(pAvl t, String x, pNode idList) {
 
     findDepNode(t->left, x, idList);
     if (strcmp(t->department, x) == 0) {
-
-//        printf("%s\n", t->courseCode);
-//            insertAtEndList(t->courseCode, idList);
         pNode tmp = malloc(sizeof(listNode));
         strcpy(tmp->topic, t->courseCode);
-//            printf("1\n");
         tmp->next = idList->next;
         idList->next = tmp;
-        printf("2\n");//1 WORKDS FINE
+//        printf("2\n");//1 WORKDS FINE
 
-//            deleteTreeNode(t, t->courseCode);
     }
 
     findDepNode(t->right, x, idList);
@@ -1087,7 +998,8 @@ void findDepNode(pAvl t, String x, pNode idList) {
 
 pAvl ninthChoice(pAvl root) {
 
-    pNode tmpID = makeEmptyList(tmpID);
+    pNode tmpID = NULL;
+    tmpID = makeEmptyList(tmpID);
 
     fgetc(stdin);
     printf("PLEASE INPUT DEPARTMENT\n");
@@ -1098,7 +1010,7 @@ pAvl ninthChoice(pAvl root) {
     }
     findDepNode(root, str, tmpID);
     for (pNode iter = tmpID; iter != null; iter = iter->next) {
-        printf("%s\n", iter->topic);
+//        printf("%s\n", iter->topic);
         root = deleteTreeNode(root, iter->topic);
 
     }
@@ -1114,19 +1026,16 @@ void filePrintInOrder(pAvl t, FILE *out) {
     if (t != NULL) {
         filePrintInOrder(t->left, out);
 
-        fprintf(out, "courseCode: %s     course name: %s      creditHours: %d      department: %s       topics: ",
-                t->courseCode, t->course, t->creditHours, t->department);
+        fprintf(out,"%s:%d#%s#%s/",
+                t->course, t->creditHours,t->courseCode,  t->department);
 
-//
-//        if (isEmptyList(t->topicsList)) {
-//            fprintf(out, "\n");
-////            return;
-//        }
-//        else {
-        for (listNode *iter = t->topicsList->next; iter != NULL; iter = iter->next) {
-            fprintf(out, "%s ", iter->topic);
+        listNode *iter= null;
+        for (iter = t->topicsList->next; iter->next != NULL; iter = iter->next) {
+            fprintf(out, "%s, ", iter->topic);
 
         }
+        fprintf(out, "%s ", iter->topic);
+
         fprintf(out, "\n");
 
 //        }
@@ -1198,6 +1107,9 @@ void deleteWholeTree(pAvl root) {
 
 
     free(root);
+    root->topicsList = makeEmptyList(root->topicsList);
+    free(root->topicsList);
+
 }
 
 
@@ -1214,7 +1126,7 @@ int main() {
     int selection;
     while (true) {
         printf("1. Read the file courses.txt file and create the tree.\n"
-               "2. Insert a new course from the user with all its associated data.\n"
+               "2. Insert a new course.\n"
                "3. Find a course and support updating of its information.\n"
                "4. List courses in lexicographic order with their associated\n"
                "information (credit hours, IDs, and topics).\n"
@@ -1334,7 +1246,7 @@ int main() {
 
                 root = eightChoice(root);
                 green();
-                printf("COURSES DELETED SUCCESSFULLY\n");
+//                printf("COURSES DELETED SUCCESSFULLY\n");
                 reset();
                 line();
                 break;
@@ -1375,11 +1287,11 @@ int main() {
 
             case 11:
 
-                deleteWholeTree(root);
 
                 bold();
                 art();
                 reset();
+                deleteWholeTree(root); // frees everything
                 line();
                 return 0;
                 break;
